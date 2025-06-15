@@ -1,0 +1,88 @@
+{% include 'admin/admin_header.html' %}
+
+<div class="container" style="max-width: 900px; margin: 20px auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333;">
+    <a href="{{ url_for('adminDashboard') }}" class="back-link" style="color: #3a5a80; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px;">&larr; Back to Dashboard</a>
+    <h1 style="color: #3a5a80; margin-bottom: 1.5rem;">Manage Timetable</h1>
+
+    <form method="POST" action="{{ url_for('addTimetableEntry') }}" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 600px; margin-bottom: 40px;">
+        <label for="course_id" style="display: block; margin-top: 10px; font-weight: 600;">Course</label>
+        <select name="course_id" id="course_id" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+            <option value="" disabled selected>Select Course</option>
+            {% for course in courses %}
+            <option value="{{ course.cid }}">{{ course.course_name }}</option>
+            {% endfor %}
+        </select>
+    
+        <label for="day_of_week" style="display: block; margin-top: 10px; font-weight: 600;">Day of Week</label>
+        <select name="day_of_week" id="day_of_week" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+            <option value="" disabled selected>Select Day</option>
+            <option>Monday</option>
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+            <option>Thursday</option>
+            <option>Friday</option>
+            <option>Saturday</option>
+            <option>Sunday</option>
+        </select>
+    
+        <label for="time_start" style="display: block; margin-top: 10px; font-weight: 600;">Start Time</label>
+        <input type="time" name="time_start" id="time_start" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+    
+        <label for="time_end" style="display: block; margin-top: 10px; font-weight: 600;">End Time</label>
+        <input type="time" name="time_end" id="time_end" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+    
+        <label for="subid" style="display: block; margin-top: 10px; font-weight: 600;">Subject</label>
+        <select name="subid" id="subid" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+            <option value="" disabled selected>Select Subject</option>
+            {% for subject in subjects %}
+            <option value="{{ subject.subid }}">{{ subject.subject_name }}</option>
+            {% endfor %}
+        </select>
+    
+        <label for="tid_teacher" style="display: block; margin-top: 10px; font-weight: 600;">Teacher</label>
+        <select name="tid_teacher" id="tid_teacher" required style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+            <option value="" disabled selected>Select Teacher</option>
+            {% for teacher in teachers %}
+            <option value="{{ teacher.tid }}">{{ teacher.name }}</option>
+            {% endfor %}
+        </select>
+    
+        <button type="submit" style="margin-top: 15px; padding: 10px 20px; background: #3a5a80; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Add Timetable Entry</button>
+    </form>
+    
+    <h2 style="color: #3a5a80; margin-bottom: 1rem;">Existing Timetable Entries</h2>
+    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <thead>
+            <tr style="background: #3a5a80; color: white;">
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">Course</th>
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">Day</th>
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">Start Time</th>
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">End Time</th>
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">Subject</th>
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">Teacher</th>
+                <th style="padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in timetable_entries %}
+            <tr>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">{{ entry.course_name }}</td>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">{{ entry.day_of_week }}</td>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">{{ entry.time_start }}</td>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">{{ entry.time_end }}</td>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">{{ entry.subject_name }}</td>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">{{ entry.teacher_name }}</td>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #ddd;">
+                    <form method="POST" action="{{ url_for('deleteTimetableEntry', tid=entry.tid) }}" onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                        <button type="submit" class="delete-button" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align:center;">No timetable entries found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,89 @@
+{% extends "user/base_student.html" %}
+
+{% block title %}Your Timetable{% endblock %}
+
+{% block content %}
+    <style>
+        .timetable-container {
+            max-width: 1100px;
+            margin: 100px auto;
+            padding: 40px;
+            background: linear-gradient(to bottom right, #f6faff, #eef3fc);
+            border-radius: 20px;
+            box-shadow: 0 12px 28px rgba(36, 198, 220, 0.15);
+            border: 1px solid #dce7f3;
+        }
+
+        
+
+        h1 {
+            font-size: 28px;
+            color: #2e3c50;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            color: #3a5a80;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            border: 1px solid #d0dbe8;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3a5a80;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f6fb;
+        }
+
+        tr:hover {
+            background-color: #e2eaf4;
+        }
+    </style>
+
+    <div class="timetable-container">
+        <a href="{{ url_for('studentDashboard') }}" class="back-link" style="color: #3a5a80; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px;">&larr; Back to Dashboard</a>
+
+        <h1><i class="fas fa-calendar-alt"></i> Your Timetable</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in timetable_entries %}
+                <tr>
+                    <td>{{ entry.day_of_week }}</td>
+                    <td>{{ entry.time_start }}</td>
+                    <td>{{ entry.time_end }}</td>
+                    <td>{{ entry.subject_name }}</td>
+                    <td>{{ entry.teacher_name }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center;">No timetable entries found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

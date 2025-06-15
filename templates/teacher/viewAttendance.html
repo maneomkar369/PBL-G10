@@ -1,0 +1,541 @@
+{% extends "teacher/teacherDashboard.html" %}
+{% block title %}View Attendance{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">View Attendance</h1>
+        <div class="d-flex align-items-center">
+            <div class="dropdown me-2">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download me-2"></i> Export
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="far fa-file-excel me-2"></i> Excel</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="far fa-file-pdf me-2"></i> PDF</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+            color: #333;
+        }
+        .header {
+            background-color: #3a5a80;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .attendance-section h2 {
+            color: #3a5a80;
+            margin-bottom: 1.5rem;
+        }
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+        .filter-group select,
+        .filter-group input[type="date"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3a5a80;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f7ff;
+        }
+        .status-present {
+            color: #28a745;
+        }
+        .status-absent {
+            color: #dc3545;
+        }
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background-color: #3a5a80;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .action-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .no-records {
+            text-align: center;
+            padding: 1rem;
+            color: #666;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="{{ url_for('teacherDashboard') }}">College ERP System</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="attendance-section">
+            <h2>Attendance Records</h2>
+            
+            <form method="GET" action="{{ url_for('viewAttendance') }}">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="course">Select Course</label>
+                        <select id="course" name="course" required>
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                                <option value="{{ course.cid }}" {% if request.args.get('course') == course.cid|string %}selected{% endif %}>{{ course.course_name }} ({{ course.branch }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="date">Select Date</label>
+                        <input type="date" id="date" name="date" value="{{ request.args.get('date', '') }}" required>
+                    </div>
+                    <div class="filter-group">
+                        <button type="submit" class="btn btn-primary">Show Records</button>
+                    </div>
+                </div>
+            </form>
+
+            {% if records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Course</th>
+                        <th>Student</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                        <tr>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.time }}</td>
+                            <td>{{ record.course_name }}</td>
+                            <td>{{ record.student_name }}</td>
+                            <td class="status-{{ record.status.lower() }}">{{ record.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                {% if request.args.get('course') and request.args.get('date') %}
+                    <p class="no-records">No attendance records found for the selected date and course.</p>
+                {% endif %}
+            {% endif %}
+
+            <div class="action-buttons">
+                <a href="{{ url_for('addAttendance') }}" class="btn btn-primary">Add New Attendance</a>
+                <a href="{{ url_for('teacherDashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label">Faculty</label>
+                        <select class="form-select" name="faculty" required>
+                            <option value="">Select Faculty</option>
+                            {% for faculty in faculties %}
+                            <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Program</label>
+                        <select class="form-select" name="program" required>
+                            <option value="">Select Program</option>
+                            {% for program in programs %}
+                            <option value="{{ program.id }}">{{ program.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Course</label>
+                        <select class="form-select" name="course" required>
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Section</label>
+                        <select class="form-select" name="section">
+                            <option value="All">All</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">From Date</label>
+                        <input type="date" class="form-control" name="date_from" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">To Date</label>
+                        <input type="date" class="form-control" name="date_to" required>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button type="button" class="btn btn-primary" id="searchBtn">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-white border-left-primary shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Students</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_students }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-white border-left-success shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Average Attendance</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ avg_attendance }}%</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-white border-left-warning shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Days Present</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ days_present }}/{{ total_days }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-white border-left-danger shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Days Absent</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ days_absent }}/{{ total_days }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-times fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Calendar -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">{{ current_month }} {{ current_year }}</h6>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-secondary" id="prevMonth">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="nextMonth">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-danger">Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th class="text-danger">Sat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for week in calendar_weeks %}
+                            <tr>
+                                {% for day in week %}
+                                <td class="{{ day.class }}">
+                                    {{ day.date }}
+                                    {% if day.status %}
+                                    <br>
+                                    <small class="badge {{ day.status_class }}">{{ day.status }}</small>
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-success me-2">Present</span>
+                    <span class="badge bg-danger me-2">Absent</span>
+                    <span class="badge bg-warning me-2">Leave</span>
+                    <span class="badge bg-secondary">Holiday</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Details Table -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th class="text-center">Total Classes</th>
+                                <th class="text-center">Present</th>
+                                <th class="text-center">Absent</th>
+                                <th class="text-center">Leave</th>
+                                <th class="text-center">Attendance %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in attendance_records %}
+                            <tr>
+                                <td>{{ record.student_id }}</td>
+                                <td>{{ record.name }}</td>
+                                <td class="text-center">{{ record.total_classes }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">{{ record.present_count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">{{ record.absent_count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning">{{ record.leave_count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <div class="progress" style="width: 100px; height: 6px;">
+                                            <div class="progress-bar {{ 'bg-success' if record.attendance_percentage >= 75 else 'bg-warning' if record.attendance_percentage >= 60 else 'bg-danger' }}" 
+                                                 role="progressbar" 
+                                                 style="width: {{ record.attendance_percentage }}%">
+                                            </div>
+                                        </div>
+                                        <span class="ms-2">{{ record.attendance_percentage }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle filter changes
+    const filterSelects = document.querySelectorAll('select');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            updateStudentList();
+        });
+    });
+
+    // Handle search button click
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        updateAttendanceData();
+    });
+
+    // Calendar navigation
+    document.getElementById('prevMonth').addEventListener('click', function() {
+        navigateCalendar('prev');
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', function() {
+        navigateCalendar('next');
+    });
+
+    function updateStudentList() {
+        const faculty = document.querySelector('select[name="faculty"]').value;
+        const program = document.querySelector('select[name="program"]').value;
+        const section = document.querySelector('select[name="section"]').value;
+
+        if (faculty && program) {
+            fetch(`/api/students?faculty=${faculty}&program=${program}&section=${section}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the table with new student data
+                    updateTable(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError('Failed to fetch student list');
+                });
+        }
+    }
+
+    function updateAttendanceData() {
+        const form = new FormData();
+        const dateFrom = document.querySelector('input[name="date_from"]').value;
+        const dateTo = document.querySelector('input[name="date_to"]').value;
+
+        if (!dateFrom || !dateTo) {
+            showError('Please select both from and to dates');
+            return;
+        }
+
+        // Get all form data
+        const formData = {
+            faculty: document.querySelector('select[name="faculty"]').value,
+            program: document.querySelector('select[name="program"]').value,
+            course: document.querySelector('select[name="course"]').value,
+            section: document.querySelector('select[name="section"]').value,
+            date_from: dateFrom,
+            date_to: dateTo
+        };
+
+        // Update attendance data
+        fetch('/api/attendance/view', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update all sections with new data
+            updateCalendar(data.calendar);
+            updateStats(data.stats);
+            updateAttendanceTable(data.records);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Failed to fetch attendance data');
+        });
+    }
+
+    function showError(message) {
+        // Show error using SweetAlert or your preferred method
+        Swal.fire({
+            title: 'Error!',
+            text: message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    // Initialize date pickers with flatpickr if needed
+    const datePickers = document.querySelectorAll('input[type="date"]');
+    datePickers.forEach(picker => {
+        flatpickr(picker, {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Student Dashboard</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(to bottom, #dfe7ef, #cfd8e3);
+                min-height: 100vh;
+                padding-top: 80px;
+                transition: margin-left 0.3s ease;
+            }
+
+            /* Navbar */
+            .navbar {
+                width: 100%;
+                background: linear-gradient(135deg, #1e3c72, #2a5298);
+                padding: 0.75rem 2rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                color: #ffffff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+            }
+
+            .navbar-left {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .logo-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px;
+                border-radius: 12px;
+                transition: all 0.3s ease;
+            }
+
+            .logo-container:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .college-logo {
+                width: 48px;
+                height: 48px;
+                object-fit: contain;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+                transition: transform 0.3s ease;
+            }
+
+            .logo-container:hover .college-logo {
+                transform: scale(1.05);
+            }
+
+            .college-name {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .college-title {
+                font-family: 'Georgia', serif;
+                font-weight: bold;
+                font-size: 24px;
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                letter-spacing: 1px;
+                margin: 0;
+            }
+
+            .college-subtitle {
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.9);
+                letter-spacing: 0.5px;
+                margin-top: 2px;
+            }
+
+            .navbar-right {
+                display: flex;
+                align-items: center;
+                margin-right: 35px; /* Add this */
+                gap: 2px;           /* Add this to control spacing between elements */
+            }
+            .nav-button {
+                background: none;
+                color: white;
+                font-size: 16px;
+                text-decoration: none;
+                padding: 8px 12px;
+                border-radius: 8px;
+                transition: background 0.3s;
+                margin-right: 15px;
+            }
+
+            .nav-button:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .small-profile-pic {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid white;
+                margin-right: 10px;
+            }
+
+            .nav-username {
+                color: white;
+                font-weight: 600;
+                margin-right: 20px;
+                font-size: 16px;
+                white-space: nowrap;
+            }
+
+            .logout-button {
+                padding: 6px 12px;
+                border-radius: 6px;
+                background-color: #ff3939;
+                transition: background 0.3s;
+            }
+
+            .logout-button:hover {
+                background-color: #2e4b6c;
+                color: #fff;
+            }
+
+            /* Sidebar */
+            .sidebar {
+                height: 100%;
+                width: 0;
+                position: fixed;
+                top: 100px; /* below navbar */
+                left: 0;
+                background-color: #3a5a80;
+                overflow-x: hidden;
+                transition: 0.3s;
+                padding-top: 20px;
+                z-index: 999;
+                border-right: 2px solid #2d445e;
+            }
+
+            .sidebar a {
+                padding: 12px 24px;
+                text-decoration: none;
+                font-size: 18px;
+                color: white;
+                display: block;
+                transition: 0.2s;
+            }
+
+            .sidebar a:hover {
+                background-color: #4f6a88;
+            }
+
+            .hamburger-container {
+                margin-top: 20px;
+                margin-left: 20px;
+                z-index: 999;
+                position: relative;
+            }
+
+            .hamburger {
+                font-size: 24px;
+                cursor: pointer;
+                color: #3a5a80;
+                background-color: #f0f4f8;
+                padding: 10px 18px;
+                border-radius: 6px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                display: inline-block;
+                transition: background 0.3s;
+            }
+
+            .hamburger:hover {
+                background-color: #e0e8f0;
+            }
+
+            .body-shift {
+                margin-left: 220px;
+            }
+
+            .dashboard-container {
+                max-width: 950px;
+                background: linear-gradient(to right, #f4faff, #e9f4fb);
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+                display: flex;
+                gap: 30px;
+                backdrop-filter: blur(6px);
+                transition: all 0.3s ease-in-out;
+                margin: 40px auto 20px auto;
+            }
+
+            .body-shift .dashboard-container {
+                margin-left: calc(220px + auto);
+            }
+
+            .profile-pic {
+                width: 160px;
+                height: 160px;
+                border-radius: 50%;
+                background-color: #e0e0e0;
+                background-image: url('{{ url_for("static", filename=student.profile_picture or "default-avatar.png") }}');
+                background-size: cover;
+                background-position: center;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .profile-details {
+                flex: 1;
+            }
+
+            h2 {
+                font-size: 32px;
+                color: #1a1a1a;
+                margin-bottom: 20px;
+            }
+
+            .profile-info p {
+                margin: 10px 0;
+                padding: 12px 16px;
+                background-color: #f7f9fa;
+                border-left: 4px solid #1a73e8;
+                border-radius: 8px;
+                color: #333;
+            }
+
+            .profile-info strong {
+                color: #111;
+            }
+
+            .action-buttons {
+                margin-top: 25px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .btn-grad {
+                background-image: linear-gradient(to right, #4a6a90 0%, #8fa0b3 50%, #4a6a90 100%);
+                padding: 15px 30px;
+                text-align: center;
+                text-transform: uppercase;
+                transition: 0.5s;
+                background-size: 200% auto;
+                color: white;
+                box-shadow: 0 0 20px #eee;
+                border-radius: 10px;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .btn-grad:hover {
+                background-position: right center;
+                color: #fff;
+                text-decoration: none;
+            }
+
+            @media (max-width: 700px) {
+                .navbar {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .navbar-right {
+                    margin-top:10px;
+                }
+
+                .dashboard-container {
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 30px 20px;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                    width: 100%;
+                }
+
+                .btn-grad {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="navbar-left">
+                <a href="{{ url_for('homepage') }}" class="logo-container">
+                    <img src="{{ url_for('static', filename='diems_logo.png') }}" alt="DIEMS Logo" class="college-logo">
+                    <div class="college-name">
+                        <h1 class="college-title">DIEMS Portal</h1>
+                        <span class="college-subtitle">Deogiri Institute of Engineering and Management Studies</span>
+                    </div>
+                </a>
+            </div>
+            <div class="navbar-right">
+                <a href="{{ url_for('homepage') }}" class="nav-button">Home</a>
+                <img src="{{ url_for('static', filename=student.profile_picture or 'default-avatar.png') }}" alt="Profile Picture" class="small-profile-pic">
+                <span class="nav-username">{{ student.name.split(' ')[0] }}</span>
+                <a href="{{ url_for('studentLogout') }}" class="logout-button" style="color: white; text-decoration: none;">Logout</a>
+            </div>
+        </header>
+
+        <!-- Hamburger Button Below Header -->
+        <div class="hamburger-container">
+            <span class="hamburger" onclick="toggleSidebar()">&#9776; Menu</span>
+        </div>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar">
+            <a href="{{ url_for('editStudentProfile') }}">Edit Profile</a>
+            <a href="{{ url_for('viewMarks') }}">View Marks</a>
+            <a href="{{ url_for('viewAttendance') }}">View Attendance</a>
+            <a href="{{ url_for('viewFees') }}">View Fees</a>
+            <a href="{{ url_for('viewTimetable') }}">View Timetable</a>
+            <a href="{{ url_for('studentLogout') }}">Logout</a>
+            <a href="{{ url_for('events.list_events') }}">View Events</a>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-container">
+            <div class="profile-pic" id="preview-pic"></div>
+            <div class="profile-details">
+                <h2>Welcome, {{ student.name }}</h2>
+                <div class="profile-info">
+                    <p><strong>Email:</strong> {{ student.email }}</p>
+                    <p><strong>Contact:</strong> {{ student.contact or 'Not provided' }}</p>
+                    <p><strong>Course:</strong> {{ student.course or 'Not provided' }}</p>
+                </div>
+                <div class="action-buttons">
+                    <a href="{{ url_for('editStudentProfile') }}" class="btn-grad">Edit Profile</a>
+                    <a href="{{ url_for('viewMarks') }}" class="btn-grad">View Marks</a>
+                    <a href="{{ url_for('viewAttendance') }}" class="btn-grad">View Attendance</a>
+                    <a href="{{ url_for('viewFees') }}" class="btn-grad">View Fees</a>
+                    <a href="{{ url_for('viewTimetable') }}" class="btn-grad">View Timetable</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <h3>Upcoming Events</h3>
+            <div class="course-list">
+                {% if events %}
+                    {% for event in events %}
+                        <div class="course-card">
+                            <h4>{{ event.title }}</h4>
+                            <p><strong>Date:</strong> {{ event.event_date }}</p>
+                            <p>{{ event.description }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No upcoming events.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar Toggle Script -->
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.getElementById("sidebar");
+                const body = document.body;
+                if (sidebar.style.width === "200px") {
+                    sidebar.style.width = "0";
+                    body.classList.remove("body-shift");
+                } else {
+                    sidebar.style.width = "200px";
+                    body.classList.add("body-shift");
+                }
+            }
+        </script>
+
+    </body>
+    </html>

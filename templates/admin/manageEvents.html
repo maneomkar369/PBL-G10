@@ -1,0 +1,183 @@
+{% extends "admin/admin_header.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-md-3 col-lg-2 sidebar">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm">
+                        <div class="mb-3">
+                            <label class="form-label">Event Type</label>
+                            {% for type in event_types %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="event_type" value="{{ type }}" id="type_{{ type }}">
+                                <label class="form-check-label text-capitalize" for="type_{{ type }}">{{ type }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <select class="form-select" name="location">
+                                <option value="">All Locations</option>
+                                {% for location in locations %}
+                                <option value="{{ location }}">{{ location }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Date Range</label>
+                            <input type="date" class="form-control mb-2" name="date_from" placeholder="From">
+                            <input type="date" class="form-control" name="date_to" placeholder="To">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Event Management</h2>
+                <div>
+                    <div class="input-group me-3 d-inline-flex" style="width: 300px;">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search events...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <a href="{{ url_for('events.create_event') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Event
+                    </a>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="eventCards">
+                {% for event in events %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if event.image_path %}
+                        <img src="{{ url_for('static', filename=event.image_path) }}" class="card-img-top" alt="{{ event.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.title }}</h5>
+                            <p class="card-text text-muted">{{ event.description[:100] }}...</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary text-capitalize">{{ event.event_type }}</span>
+                                <small class="text-muted">{{ event.event_date }}</small>
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-map-marker-alt"></i> {{ event.location }}<br>
+                                <i class="fas fa-clock"></i> {{ event.duration }}<br>
+                                <i class="fas fa-users"></i> {{ event.registration_count }}/{{ event.capacity }} registered
+                            </div>
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ url_for('events.view_event', event_id=event.id) }}" class="btn btn-outline-primary">View</a>
+                                <a href="{{ url_for('events.edit_event', event_id=event.id) }}" class="btn btn-outline-secondary">Edit</a>
+                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Delete Modals -->
+                <!-- Delete Modal for each event -->
+                <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ event.id }}">Confirm Delete</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete the event "{{ event.title }}"? This action cannot be undone.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="{{ url_for('events.delete_event', event_id=event.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to apply filters and update the URL
+    function applyFilters() {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        const searchInput = document.getElementById('searchInput').value;
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (searchInput) params.append('search', searchInput);
+        
+        for (const [key, value] of formData) {
+            if (value) params.append(key, value);
+        }
+        
+        // Update URL and reload page with filters
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.location.href = newUrl;
+    }
+    
+    // Add event listeners to form elements
+    const filterForm = document.getElementById('filterForm');
+    const formElements = filterForm.querySelectorAll('input, select');
+    formElements.forEach(element => {
+        element.addEventListener('change', applyFilters);
+    });
+    
+    // Add event listener to search button
+    document.getElementById('searchButton').addEventListener('click', applyFilters);
+    
+    // Enable search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyFilters();
+        }
+    });
+    
+    // Set form values from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    for (const [key, value] of urlParams) {
+        const elements = filterForm.querySelectorAll(`[name="${key}"]`);
+        elements.forEach(element => {
+            if (element.type === 'checkbox') {
+                if (Array.isArray(urlParams.getAll(key))) {
+                    element.checked = urlParams.getAll(key).includes(element.value);
+                }
+            } else {
+                element.value = value;
+            }
+        });
+    }
+    
+    // Set search input value from URL
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+        document.getElementById('searchInput').value = searchParam;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Subjects - College ERP System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+        nav a {
+            color: white;
+            margin-left: 1.5rem;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .subjects-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .subjects-section h1 {
+            color: #1a73e8;
+            margin-bottom: 1.5rem;
+        }
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .subject-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .subject-card h3 {
+            color: #1a73e8;
+            margin-bottom: 0.5rem;
+        }
+        .subject-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #1a73e8;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .flash-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .flash-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="{{ url_for('teacherDashboard') }}">College ERP System</a>
+            </div>
+            <nav>
+                <a href="{{ url_for('teacherDashboard') }}">Dashboard</a>
+                <a href="{{ url_for('teacherLogout') }}">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="subjects-section">
+            <h1>My Subjects</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="subjects-grid">
+                {% for subject in teacher_subjects %}
+                <div class="subject-card">
+                    <h3>{{ subject.subject_name }}</h3>
+                    <p><strong>Course:</strong> {{ subject.course_name }}</p>
+                    <p><strong>Semester:</strong> {{ subject.semester }}</p>
+                    <form method="POST" action="{{ url_for('removeSubject', subid=subject.subid) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="subjects-section">
+            <h1>Available Subjects</h1>
+            <div class="subjects-grid">
+                {% for subject in available_subjects %}
+                <div class="subject-card">
+                    <h3>{{ subject.subject_name }}</h3>
+                    <p><strong>Course:</strong> {{ subject.course_name }}</p>
+                    <p><strong>Semester:</strong> {{ subject.semester }}</p>
+                    <form method="POST" action="{{ url_for('teacher_add_subject', subid=subject.subid) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-primary">Add to My Subjects</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

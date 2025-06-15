@@ -1,0 +1,90 @@
+{% extends "user/base_student.html" %}
+
+{% block title %}Your Fees{% endblock %}
+
+{% block content %}
+<style>
+    .main-container {
+        max-width: 900px;
+        margin: 100px auto;
+        padding: 30px;
+        background-color: #f4f9ff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-link {
+        color: #3a5a80;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 26px;
+        color: #2e3c50;
+        margin-bottom: 25px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 14px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #e1ecf7;
+        color: #2e3c50;
+        font-weight: 600;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover {
+        background-color: #f5faff;
+    }
+</style>
+
+<div class="main-container">
+    <a href="{{ url_for('studentDashboard') }}" class="back-link">&larr; Back to Dashboard</a>
+    <h1><i class="fas fa-wallet" style="margin-right: 8px;"></i> Your Fees</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Fee Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Payment Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fee in fees %}
+            <tr>
+                <td>{{ fee.fee_type }}</td>
+                <td>{{ fee.amount }}</td>
+                <td>{{ fee.status }}</td>
+                <td>{{ fee.due_date }}</td>
+                <td>{{ fee.payment_date or 'N/A' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align:center;">No fee records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>View Marks - College ERP System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #3a5a80;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .header {
+            background-color: #3a5a80;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+        nav a {
+            color: white;
+            margin-left: 1.5rem;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #3a5a80;
+            margin-bottom: 1.5rem;
+        }
+        .form-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-filters select {
+            padding: 0.6rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3a5a80;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f7ff;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #3a5a80;
+            color: white;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #2a3e56;
+        }
+        .flash-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="{{ url_for('teacherDashboard') }}">College ERP System</a>
+            </div>
+            <nav>
+                <a href="{{ url_for('teacherDashboard') }}">Dashboard</a>
+                <a href="{{ url_for('teacherLogout') }}">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>View Marks</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="GET" class="form-filters">
+            <select name="course">
+                <option value="">-- Select Course --</option>
+                {% for course in courses %}
+                    <option value="{{ course.cid }}" {% if request.args.get('course') == course.cid|string %}selected{% endif %}>{{ course.name }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="assessment_type">
+                <option value="">-- Assessment Type --</option>
+                <option value="Assignment" {% if request.args.get('assessment_type') == 'Assignment' %}selected{% endif %}>Assignment</option>
+                <option value="Midterm" {% if request.args.get('assessment_type') == 'Midterm' %}selected{% endif %}>Midterm</option>
+                <option value="Final" {% if request.args.get('assessment_type') == 'Final' %}selected{% endif %}>Final</option>
+                <option value="Quiz" {% if request.args.get('assessment_type') == 'Quiz' %}selected{% endif %}>Quiz</option>
+                <option value="Project" {% if request.args.get('assessment_type') == 'Project' %}selected{% endif %}>Project</option>
+            </select>
+
+            <button type="submit" class="btn">Filter</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Course</th>
+                    <th>Assessment Type</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if records %}
+                    {% for row in records %}
+                        <tr>
+                            <td>{{ row.student_name }}</td>
+                            <td>{{ row.course_name }}</td>
+                            <td>{{ row.assessment_type }}</td>
+                            <td>{{ row.marks }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No marks found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

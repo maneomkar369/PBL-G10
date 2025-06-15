@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Student Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom, #dfe7ef, #cfd8e3);
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .navbar {
+            width: 100%;
+            background: linear-gradient(135deg, #3a5a80, #7a8ea3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .college-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        .college-name {
+            font-family: 'Georgia', serif;
+            font-size: 23px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            margin-right: 25px;
+            gap: 1.2rem;
+        }
+
+        .nav-button,
+        .logout-button {
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-button:hover,
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-wrapper {
+            position: fixed;
+            top: 92px;
+            left: 12px;
+            background: #3a5a80;
+            padding: 12px;
+            z-index: 101;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            transition: left 0.3s ease;
+        }
+
+        .menu-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -240px;
+            width: 240px;
+            height: 100%;
+            background: #3a5a80;
+            padding-top: 100px;
+            color: white;
+            transition: left 0.3s ease;
+            z-index: 98;
+        }
+
+        .sidebar.show {
+            left: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .content-container {
+            max-width: 1100px;
+            margin: 120px auto 40px;
+            padding: 40px;
+            background: linear-gradient(to bottom right, #f6faff, #eef3fc);
+            border-radius: 20px;
+            box-shadow: 0 12px 28px rgba(36, 198, 220, 0.15);
+            border: 1px solid #dce7f3;
+        }
+
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 20px;
+            }
+
+            .toggle-wrapper {
+                top: 68px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('studentDashboard') }}">Dashboard</a>
+        <a href="{{ url_for('editStudentProfile') }}">Edit Profile</a>
+        <a href="{{ url_for('viewMarks') }}">View Marks</a>
+        <a href="{{ url_for('viewFees') }}">View Fees</a>
+        <a href="{{ url_for('studentViewAttendance') }}">View Attendance</a>
+        <a href="{{ url_for('viewTimetable') }}">View Timetable</a>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='diems_logo.png') }}" alt="College Logo" class="college-logo">
+            <div class="college-name">DIEMS PORTAL</div>
+        </div>
+        <div class="navbar-right">
+            <a href="{{ url_for('homepage') }}" class="nav-button">Home</a>
+            <a href="{{ url_for('studentLogout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>
+
+    <!-- Toggle Button -->
+    <div class="toggle-wrapper" id="toggle-wrapper">
+        <button id="menu-btn" class="menu-button" onclick="toggleSidebar()">
+            <i class="fas fa-bars" id="menu-icon"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Sidebar Toggle Script -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('menu-icon');
+            const toggleWrapper = document.getElementById('toggle-wrapper');
+
+            sidebar.classList.toggle('show');
+
+            if (sidebar.classList.contains('show')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+                toggleWrapper.style.left = '250px';
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+                toggleWrapper.style.left = '12px';
+            }
+        }
+    </script>
+</body>
+</html>

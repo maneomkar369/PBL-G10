@@ -1,0 +1,105 @@
+{% include 'admin/admin_header.html' %}
+
+<style>
+    .dashboard-container {
+        padding: 20px;
+        background-color: #f4f6f9;
+        min-height: 80vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .section-box {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .section-box h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    th, td {
+        text-align: left;
+        padding: 12px 15px;
+    }
+    th {
+        background-color: #3a5a80;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        color: white;
+        font-weight: bold;
+        font-size: 13px;
+        display: inline-block;
+    }
+    .paid {
+        background-color: #28a745;
+    }
+    .pending {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .na {
+        background-color: #6c757d;
+    }
+</style>
+
+<div class="main-content" id="main-content">
+    <div class="dashboard-container">
+            <a href="{{ url_for('adminDashboard') }}" class="back-link" style="color: #3a5a80; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px;">&larr; Back to Dashboard</a>
+
+        <div class="section-box">
+            <h1>Fee Report</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Fee ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Payment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in fee_report %}
+                    <tr>
+                        <td>{{ fee.sid }}</td>
+                        <td>{{ fee.name }}</td>
+                        <td>{{ fee.feeid if fee.feeid else 'N/A' }}</td>
+                        <td>{{ fee.amount if fee.amount else 'N/A' }}</td>
+                        <td>
+                            {% if fee.status == 'Paid' %}
+                                <span class="status-badge paid">✔ Paid</span>
+                            {% elif fee.status == 'Pending' %}
+                                <span class="status-badge pending">⏳ Pending</span>
+                            {% else %}
+                                <span class="status-badge na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ fee.due_date if fee.due_date else 'N/A' }}</td>
+                        <td>{{ fee.payment_date if fee.payment_date else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - College ERP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(160deg, #0f0c29, #302b63, #24243e);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: linear-gradient(145deg, #1f1f2e, #2c2c48);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: #00bfff;
+        }
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #2e2e4e;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        input::placeholder {
+            color: #aaa;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00bfff;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #0095cc;
+        }
+        .flash-message {
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Admin Login</h2>
+    
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
+        <form method="POST" action="{{ url_for('adminLogin') }}">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+    
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+    
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

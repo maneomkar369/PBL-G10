@@ -1,0 +1,51 @@
+{% include 'admin/admin_header.html' %}
+
+<div class="container" style="max-width: 800px; margin: 20px auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333;">
+    <a href="{{ url_for('adminDashboard') }}" class="back-link" style="color: #3a5a80; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px;">&larr; Back to Dashboard</a>
+
+    <h2 style="color: #3a5a80; margin-bottom: 1.5rem;">Add New Student</h2>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="background-color: #ffebee; color: #35c628; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center;">
+                {{ messages[0] }}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <div style="margin-bottom: 1.5rem;">
+            <label for="name" style="display: block; margin-bottom: 0.5rem; color: #666;">Full Name:</label>
+            <input type="text" id="name" name="name" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label for="email" style="display: block; margin-bottom: 0.5rem; color: #666;">Email:</label>
+            <input type="email" id="email" name="email" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label for="password" style="display: block; margin-bottom: 0.5rem; color: #666;">Password:</label>
+            <input type="password" id="password" name="password" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label for="contact" style="display: block; margin-bottom: 0.5rem; color: #666;">Contact Number:</label>
+            <input type="text" id="contact" name="contact" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label for="course" style="display: block; margin-bottom: 0.5rem; color: #666;">Course:</label>
+            <select id="course" name="course" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; background-color: white; cursor: pointer;">
+                <option value="" disabled selected>Select a course</option>
+                {% for course in courses %}
+                    <option value="{{ course.course_name }}">{{ course.course_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label for="profile_picture" style="display: block; margin-bottom: 0.5rem; color: #666;">Profile Picture:</label>
+            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="width: 100%;">
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button type="submit" style="padding: 0.8rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; background-color: #3a5a80; color: white; transition: background-color 0.3s;">Add Student</button>
+            <a href="{{ url_for('adminDashboard') }}" style="padding: 0.8rem 1.5rem; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Back to Dashboard</a>
+        </div>
+    </form>
+</div>

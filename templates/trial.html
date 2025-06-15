@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College ERP System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(160deg, #0f0c29, #302b63, #24243e);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e1e2f, #2e2e4e);
+            padding: 1rem 2rem;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+        }
+
+        .header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a,
+        .login-btn {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-btn {
+            background-color: transparent;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background-color: #fff;
+            color: #1e1e2f;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #2e2e4e;
+            min-width: 200px;
+            border-radius: 6px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: #ffffff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #41416a;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            color: #cccccc;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #1f1f2e, #2c2c48);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: #00bfff;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #bbbbbb;
+        }
+
+        /* Admin Dashboard Center */
+        .admin-dashboard {
+            grid-column: span 1;
+            justify-self: center;
+        }
+
+        .footer {
+            background-color: #1e1e2f;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+        .blur-bg {
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .blur-bg::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image: inherit;
+          background-size: cover;
+          background-position: center;
+          filter: blur(6px);
+          transform: scale(1.1); /* slight zoom to avoid edge blur gaps */
+          z-index: 1;
+        }
+        
+        .blur-bg .section-content {
+          position: relative;
+          z-index: 2;
+          backdrop-filter: brightness(1.2); /* slight brightness bump */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">College ERP</div>
+            <nav class="nav-links">
+                <a href="#">Home</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+                <div class="dropdown">
+                    <button class="login-btn">Login</button>
+                    <div class="dropdown-content">
+                        <a href="#">Student Login</a>
+                        <a href="#">Teacher Login</a>
+                        <a href="#">Admin Login</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-section">
+            <h1>Welcome to the College ERP System</h1>
+            <p>Streamline your college management with our easy-to-use ERP system. Designed for students, teachers, and administrators alike.</p>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <h3>Student Dashboard</h3>
+                <p>Track attendance, grades, fees, and notifications in one place.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Teacher Dashboard</h3>
+                <p>Manage class schedules, assignments, and student performance efficiently.</p>
+            </div>
+            <div class="feature-card admin-dashboard">
+                <h3>Admin Dashboard</h3>
+                <p>Oversee the complete institution with reports, management tools, and analytics.</p>
+            </div>
+            <section class="section blur-bg" style="background-image: url('{{ url_for('static', filename='college.animated.png') }}');">
+              </section>
+    </main>
+
+    <footer class="footer">
+        &copy; 2025 College ERP System. All rights reserved.
+    </footer>
+
+</body>
+</html>

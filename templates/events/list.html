@@ -1,0 +1,348 @@
+{% extends role == 'admin' and "admin/admin_header.html" or role == 'teacher' and "teacher/teacherDashboard.html" or "user/base_student.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-filter"></i> Filter Events
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm">
+                        <!-- Location Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Location</label>
+                            <select class="form-select" id="locationFilter">
+                                <option value="all">All Locations</option>
+                                <option value="main-campus">Main Campus</option>
+                                <option value="auditorium">Auditorium</option>
+                                <option value="sports-complex">Sports Complex</option>
+                            </select>
+                        </div>
+
+                        <!-- Date Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Date</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="date" class="form-control" id="dateFrom" placeholder="From">
+                                </div>
+                                <div class="col-6">
+                                    <input type="date" class="form-control" id="dateTo" placeholder="To">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Type Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Event Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="cultural" id="culturalEvents">
+                                <label class="form-check-label" for="culturalEvents">Cultural</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="technical" id="technicalEvents">
+                                <label class="form-check-label" for="technicalEvents">Technical</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="sports" id="sportsEvents">
+                                <label class="form-check-label" for="sportsEvents">Sports</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="academic" id="academicEvents">
+                                <label class="form-check-label" for="academicEvents">Academic</label>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events List -->
+        <div class="col-md-9">
+            <!-- Header Section -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-0">College Events</h2>
+                    <p class="text-muted mb-0">Discover and participate in upcoming events</p>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    {% if role == 'admin' %}
+                    <a href="{{ url_for('events.create_event') }}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Create Event
+                    </a>
+                    {% endif %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="showUpcoming()">
+                            Upcoming Events
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showPast()">
+                            Past Events
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body py-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="searchEvents" placeholder="Search events...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="text-muted me-2">Sort by:</span>
+                            <select class="form-select d-inline-block w-auto" id="sortEvents">
+                                <option value="date-asc">Date (Ascending)</option>
+                                <option value="date-desc">Date (Descending)</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="row row-cols-1 row-cols-md-2 g-4 mb-4" id="eventsGrid">
+                {% for event in events %}
+                <div class="col event-card" 
+                     data-event-date="{{ event.event_date }}"
+                     data-event-name="{{ event.title }}"
+                     data-event-type="cultural">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ url_for('static', filename='uploads/student_' ~ loop.index % 5 + 1 ~ '.jpg') }}"
+                                 class="card-img-top"
+                                 style="height: 200px; object-fit: cover;"
+                                 alt="{{ event.title }}">
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-primary">{{ event.event_date }}</span>
+                            </div>
+                            {% if event.registration_count %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-info">
+                                    <i class="fas fa-users"></i> {{ event.registration_count }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">{{ event.title }}</h5>
+                            <p class="card-text text-muted">
+                                {{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}
+                            </p>
+                            <div class="d-flex align-items-center text-muted small mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span>Main Campus, College Auditorium</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{{ url_for('events.view_event', event_id=event.id) }}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-info-circle"></i> View Details
+                                </a>
+                                {% if role == 'admin' %}
+                                <div class="btn-group">
+                                    <a href="{{ url_for('events.edit_event', event_id=event.id) }}" 
+                                       class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>                                    <button type="button" 
+                                            class="btn btn-outline-danger btn-sm"
+                                            data-event-id="{{ event.id }}"
+                                            data-event-title="{{ event.title }}"
+                                            onclick="confirmDelete(this)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if role == 'admin' %}
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this event? This action cannot be undone.</p>
+                <p class="text-danger mb-0" id="deleteEventName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- JavaScript for filtering and sorting -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchEvents');
+    const sortSelect = document.getElementById('sortEvents');
+    const eventCards = document.querySelectorAll('.event-card');
+
+    // Search functionality
+    searchInput.addEventListener('input', filterEvents);
+    sortSelect.addEventListener('change', filterEvents);
+
+    function filterEvents() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const sortValue = sortSelect.value;
+        const locationFilter = document.getElementById('locationFilter').value;
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+        const eventTypes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                               .map(cb => cb.value);
+
+        // Convert NodeList to Array for sorting
+        const cardsArray = Array.from(eventCards);
+
+        // Sort cards
+        cardsArray.sort((a, b) => {
+            const dateA = new Date(a.dataset.eventDate);
+            const dateB = new Date(b.dataset.eventDate);
+            const nameA = a.dataset.eventName.toLowerCase();
+            const nameB = b.dataset.eventName.toLowerCase();
+
+            switch(sortValue) {
+                case 'date-asc':
+                    return dateA - dateB;
+                case 'date-desc':
+                    return dateB - dateA;
+                case 'name-asc':
+                    return nameA.localeCompare(nameB);
+                case 'name-desc':
+                    return nameB.localeCompare(nameA);
+                default:
+                    return 0;
+            }
+        });
+
+        // Filter and show/hide cards
+        cardsArray.forEach(card => {
+            const cardTitle = card.querySelector('.card-title').textContent.toLowerCase();
+            const cardDate = new Date(card.dataset.eventDate);
+            const cardType = card.dataset.eventType;
+
+            let showCard = cardTitle.includes(searchTerm);
+
+            // Apply date filter
+            if (dateFrom && dateTo) {
+                const start = new Date(dateFrom);
+                const end = new Date(dateTo);
+                showCard = showCard && cardDate >= start && cardDate <= end;
+            }
+
+            // Apply event type filter
+            if (eventTypes.length > 0) {
+                showCard = showCard && eventTypes.includes(cardType);
+            }
+
+            // Apply location filter
+            if (locationFilter !== 'all') {
+                showCard = showCard && card.dataset.location === locationFilter;
+            }
+
+            card.style.display = showCard ? '' : 'none';
+        });
+
+        // Reorder cards in the DOM
+        const container = document.getElementById('eventsGrid');
+        cardsArray.forEach(card => container.appendChild(card));
+    }
+});
+
+function confirmDelete(eventId, eventName) {
+    document.getElementById('deleteEventName').textContent = eventName;
+    document.getElementById('deleteForm').action = `/events/delete/${eventId}`;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+function showUpcoming() {
+    const today = new Date();
+    document.querySelectorAll('.event-card').forEach(card => {
+        const eventDate = new Date(card.dataset.eventDate);
+        card.style.display = eventDate >= today ? '' : 'none';
+    });
+}
+
+function showPast() {
+    const today = new Date();
+    document.querySelectorAll('.event-card').forEach(card => {
+        const eventDate = new Date(card.dataset.eventDate);
+        card.style.display = eventDate < today ? '' : 'none';
+    });
+}
+
+function applyFilters() {
+    filterEvents();
+}
+
+// Delete confirmation function
+    function confirmDelete(button) {
+        const eventId = button.dataset.eventId;
+        const eventTitle = button.dataset.eventTitle;
+        
+        Swal.fire({
+            title: 'Confirm Delete',
+            text: `Are you sure you want to delete "${eventTitle}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the delete form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/events/delete/${eventId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    // Initialize tooltips and popovers
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
+</script>
+{% endblock %}

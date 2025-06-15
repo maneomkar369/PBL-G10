@@ -1,0 +1,215 @@
+{% extends "teacher/teacherDashboard.html" %}
+{% block title %}Add Attendance{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Subject Attendance</h1>
+        <div class="d-flex align-items-center">
+            <div class="dropdown me-2">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download me-2"></i> Export
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="far fa-file-excel me-2"></i> Excel</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="far fa-file-pdf me-2"></i> PDF</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Faculty</label>
+                    <select class="form-select" name="faculty" required>
+                        <option value="">Select Faculty</option>
+                        {% for faculty in faculties %}
+                        <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Program</label>
+                    <select class="form-select" name="program" required>
+                        <option value="">Select Program</option>
+                        {% for program in programs %}
+                        <option value="{{ program.id }}">{{ program.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Section</label>
+                    <select class="form-select" name="section">
+                        <option value="All">All</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-control" name="date" value="{{ today_date }}" required>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-white border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Students</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalStudents">240</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-white border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Present Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="presentCount">230</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-white border-left-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Absent Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="absentCount">10</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" id="attendanceForm">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th class="text-center">Present</th>
+                                <th class="text-center">Absent</th>
+                                <th class="text-center">Leave</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.id }}</td>
+                                <td>{{ student.name }}</td>
+                                <td class="text-center">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input attendance-radio" type="radio" 
+                                               name="attendance_{{ student.id }}" value="present" 
+                                               checked>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input attendance-radio" type="radio" 
+                                               name="attendance_{{ student.id }}" value="absent">
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input attendance-radio" type="radio" 
+                                               name="attendance_{{ student.id }}" value="leave">
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" 
+                                           name="note_{{ student.id }}" placeholder="Add note...">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-4">
+                    <button type="button" class="btn btn-light me-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update attendance counts
+    function updateCounts() {
+        const total = document.querySelectorAll('tbody tr').length;
+        const present = document.querySelectorAll('input[value="present"]:checked').length;
+        const absent = document.querySelectorAll('input[value="absent"]:checked').length;
+        
+        document.getElementById('totalStudents').textContent = total;
+        document.getElementById('presentCount').textContent = present;
+        document.getElementById('absentCount').textContent = absent;
+    }
+
+    // Add event listeners to all radio buttons
+    document.querySelectorAll('.attendance-radio').forEach(radio => {
+        radio.addEventListener('change', updateCounts);
+    });
+
+    // Initialize counts
+    updateCounts();
+
+    // Handle form submission
+    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Add your form submission logic here
+        
+        // Show success message
+        Swal.fire({
+            title: 'Success!',
+            text: 'Attendance has been saved successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    });
+
+    // Handle faculty/program/section changes
+    const filterSelects = document.querySelectorAll('select[name="faculty"], select[name="program"], select[name="section"]');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            // Add your filter logic here
+            // This should trigger a fetch to get updated student list
+        });
+    });
+});
+</script>
+{% endblock %}

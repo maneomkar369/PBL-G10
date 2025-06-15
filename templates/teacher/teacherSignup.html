@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Sign Up - College ERP System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background-color: #445d8c;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+        .signup-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .signup-container h2 {
+            color: #1f3b5c;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-group select {
+            background-color: white;
+            cursor: pointer;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #445d8c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color:#445d8c;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .login-link a {
+            color: #445d8c;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .flash-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .flash-error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .flash-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="{{ url_for('homepage') }}">College ERP System</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="signup-container">
+        <h2>Teacher Sign Up</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('teacherSignup') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact Number</label>
+                <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" title="Please enter a valid 10-digit contact number" required>
+                <small class="form-text text-muted">Enter a 10-digit contact number</small>
+            </div>
+
+            <div class="form-group">
+                <label for="branch">Branch</label>
+                <select id="branch" name="branch" required>
+                    <option value="">Select Branch</option>
+                    <option value="CSE">Computer Science</option>
+                    <option value="IT">Information Technology</option>
+                    <option value="AIDS">AI & DS</option>
+                    <option value="ENTC">ENTC</option>
+                </select>
+            </div>
+            
+            <script>
+                document.getElementById('contact').addEventListener('input', function(e) {
+                    // Remove any non-numeric characters
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    
+                    // Limit to 10 digits
+                    if (this.value.length > 10) {
+                        this.value = this.value.slice(0, 10);
+                    }
+                });
+            </script>
+
+            <div class="form-group">
+                <label for="photo">Upload Photo</label>
+                <input type="file" id="photo" name="photo" accept="image/*" required>
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="{{ url_for('homepage') }}">Login</a>
+        </div>
+    </div>
+</body>
+</html> 

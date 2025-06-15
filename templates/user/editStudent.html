@@ -1,0 +1,86 @@
+{% extends "user/base_student.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 40px;
+            background: linear-gradient(to bottom right, #f6faff, #eef3fc);
+            border-radius: 20px;
+            box-shadow: 0 12px 28px rgba(36, 198, 220, 0.15);
+            border: 1px solid #dce7f3;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #2e3c50;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #3a5a80;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #c0c9d6;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background: linear-gradient(to bottom, #dce3ec, #c0c9d6);
+            color: #1a1a1a;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background: linear-gradient(to bottom, #cad8e6, #aab8c8);
+        }
+
+        .back-link {
+            color: #3a5a80;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <div class="profile-container">
+        <a href="{{ url_for('studentDashboard') }}" class="back-link">&larr; Back to Dashboard</a>
+        <h1>Edit Profile</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ student.name }}" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ student.email }}" required>
+
+            <label for="contact">Contact:</label>
+            <input type="text" id="contact" name="contact" value="{{ student.contact }}">
+
+            <label for="course">Course:</label>
+            <input type="text" id="course" name="course" value="{{ student.course }}">
+
+            <label for="profile_picture">Profile Picture:</label>
+            <input type="file" id="profile_picture" name="profile_picture">
+
+            <input type="submit" value="Update Profile">
+        </form>
+    </div>
+{% endblock %}

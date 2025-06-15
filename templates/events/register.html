@@ -1,0 +1,131 @@
+{% extends role == 'admin' and "admin/admin_header.html" or role == 'teacher' and "teacher/teacherDashboard.html" or "user/base_student.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('events.list_events') }}">Events</a></li>
+                    <li class="breadcrumb-item active">Event Registration</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 mb-3">Event Registration</h1>
+            <p class="lead text-muted">Register for upcoming social gatherings and events</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Section -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    <h4 class="mb-0">Registration Form</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="ratio ratio-1x1">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSctNPYJeeWlaUUMcpmICcTskf6vrTANPfv6KCJ46olCRTkWsQ/viewform?embedded=true" 
+                                frameborder="0" 
+                                marginheight="0" 
+                                marginwidth="0"
+                                class="w-100 h-100">
+                            Loading...
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Registration Guidelines -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Registration Guidelines
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Fill in all required fields accurately
+                        </div>
+                        <div class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Use your college email address
+                        </div>
+                        <div class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Submit only one response per event
+                        </div>
+                        <div class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Keep your registration confirmation
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Important Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-clock me-2"></i>
+                        Registration closes 24 hours before event
+                    </div>
+                    <div class="alert alert-success mb-3">
+                        <i class="fas fa-envelope me-2"></i>
+                        Confirmation will be sent to your email
+                    </div>
+                    <div class="alert alert-warning mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Limited seats available
+                    </div>
+                </div>
+            </div>
+
+            <!-- Need Help? -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>
+                        Need Help?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Having trouble with registration? Contact our support team:</p>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-envelope me-2 text-muted"></i>
+                            support@college.edu
+                        </li>
+                        <li>
+                            <i class="fas fa-phone me-2 text-muted"></i>
+                            +1 (123) 456-7890
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS for responsive iframe -->
+<style>
+@media (max-width: 768px) {
+    .ratio-1x1 {
+        height: 800px !important;
+    }
+}
+</style>
+{% endblock %}

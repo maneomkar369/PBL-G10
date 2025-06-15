@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - College ERP System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(145deg, #dfe9f3, #f5f7fa); /* lighter clean background */
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e1e2f, #2e2e4e);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+        .signup-container {
+            max-width: 550px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: linear-gradient(145deg, #ffffff, #f0f2f5); /* card also light */
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .signup-container h2 {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .form-group select {
+            cursor: pointer;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #1557b0;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #333;
+        }
+        .login-link a {
+            color: #1e3c72;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .flash-message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .flash-error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .flash-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .user-type-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .user-type-section h3 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="{{ url_for('homepage') }}">College ERP System</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="signup-container">
+        <h2>Create an Account</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('signup') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="user_type">Select User Type</label>
+                <select id="user_type" name="user_type" required onchange="toggleFields()">
+                    <option value="">Select a user type</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+
+            <!-- Student Specific Fields -->
+            <div id="studentFields" class="user-type-section" style="display: none;">
+                <h3>Student Information</h3>
+                <div class="form-group">
+                    <label for="contact">Contact Number</label>
+                    <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" title="Please enter a valid 10-digit contact number" required>
+                    <small class="form-text text-muted">Enter a 10-digit contact number</small>
+                </div>
+                <script>
+                    document.getElementById('contact').addEventListener('input', function(e) {
+                        // Remove any non-numeric characters
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        
+                        // Limit to 10 digits
+                        if (this.value.length > 10) {
+                            this.value = this.value.slice(0, 10);
+                        }
+                    });
+                </script>
+                <div class="form-group">
+                    <label for="course">Course</label>
+                    <select id="course" name="course" required>
+                        <option value="">Select Course</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="AI & DS">AI & DS</option>
+                        <option value="ENTC">ENTC</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Teacher Specific Fields -->
+            <div id="teacherFields" class="user-type-section" style="display: none;">
+                <h3>Teacher Information</h3>
+                <div class="form-group">
+                    <label for="branch">Branch</label>
+                    <select id="branch" name="branch">
+                        <option value="">Select Branch</option>
+                        <option value="CSE">Computer Science</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="AIDS">AI & DS</option>
+                        <option value="ENTC">ENTC</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Photo Upload (for Student and Teacher) -->
+            <div id="photoFields" class="form-group" style="display: none;">
+                <label for="photo">Upload Photo</label>
+                <input type="file" id="photo" name="photo" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="{{ url_for('homepage') }}">Login</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleFields() {
+            const userType = document.getElementById('user_type').value;
+            const studentFields = document.getElementById('studentFields');
+            const teacherFields = document.getElementById('teacherFields');
+            const photoFields = document.getElementById('photoFields');
+            const courseSelect = document.getElementById('course');
+            const branchSelect = document.getElementById('branch');
+            const contactInput = document.getElementById('contact');
+            const photoInput = document.getElementById('photo');
+
+            // Hide all fields first
+            studentFields.style.display = 'none';
+            teacherFields.style.display = 'none';
+            photoFields.style.display = 'none';
+
+            // Reset required attributes
+            courseSelect.removeAttribute('required');
+            branchSelect.removeAttribute('required');
+            contactInput.removeAttribute('required');
+            photoInput.removeAttribute('required');
+
+            // Show relevant fields based on user type
+            if (userType === 'student') {
+                studentFields.style.display = 'block';
+                photoFields.style.display = 'block';
+                courseSelect.setAttribute('required', 'required');
+                contactInput.setAttribute('required', 'required');
+                photoInput.setAttribute('required', 'required');
+            } else if (userType === 'teacher') {
+                teacherFields.style.display = 'block';
+                photoFields.style.display = 'block';
+                branchSelect.setAttribute('required', 'required');
+                photoInput.setAttribute('required', 'required');
+            } else if (userType === 'admin') {
+                // Admin doesn't need extra fields
+            }
+        }
+    </script>
+</body>
+</html>
