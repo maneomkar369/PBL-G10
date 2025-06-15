@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Event Management Portal
 
 This is an Event Management Portal built using Python and Flask. It allows for managing events, student registrations, teacher management, and more.
